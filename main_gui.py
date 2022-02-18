@@ -16,7 +16,7 @@ def getApkPath(files):
         apk_path_Text.insert(1.0, files[-1].decode("gbk"))
     except:
         apk_path_Text.delete(1.0, END)
-        apk_path_Text.insert(1.0, "Get apk path false!\n")
+        apk_path_Text.insert(1.0, "\tGet apk path false!\n")
 
 def signApk():
     apk_path = apk_path_Text.get(1.0, END).strip().replace("\n","")
@@ -34,16 +34,15 @@ def signApk():
     # print('return code:', return_code, '\ndata:', data)
     try:
         print_win.delete(1.0, END)
-        print_win.insert(END, "*****************************************\n")
-        print_win.insert(END, "Return code:" + str(return_code) + "\n")
-        print_win.insert(END, "Data:" + str(data) + "\n")
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
     except:
         print_win.delete(1.0, END)
-        print_win.insert(1.0, "Apk sign false!")
+        print_win.insert(1.0, "\tApk sign false!")
 
 def getApkInfo():
-
-    global packageName
+    packageName = ""
     apk_path = apk_path_Text.get(1.0, END).strip().replace("\n", "")
     try:
         apk = APK(apk_path)
@@ -88,10 +87,30 @@ def getApkInfo():
         print_win.insert(END, "\t*****************************************\n")
     except:
         print_win.delete(1.0, END)
-        print_win.insert(1.0, "Get apk info false!\n")
+        print_win.insert(1.0, "\tGet apk info false!\n")
+    return packageName
 
 def pushFrida():
-    pass
+    cmd = "adb push ./hluda-server-14.2.2-android-arm64 /data/local/tmp"
+    return_code, data = run(cmd)
+    try:
+        print_win.delete(1.0, END)
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
+    except:
+        print_win.delete(1.0, END)
+        print_win.insert(1.0, "\tFrida push false!\n")
+    cmd = "adb shell su -c 'chmod +x /data/local/tmp/hluda*'"
+    return_code, data = run(cmd)
+    try:
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
+    except:
+        print_win.delete(1.0, END)
+        print_win.insert(1.0, "\tFrida chmod false!\n")
+
 
 def startFrida():
     cmd = "adb shell su -c '/data/local/tmp/hluda-server-14.2.2-android-arm64'"
@@ -99,12 +118,12 @@ def startFrida():
     # print('return code:', return_code, '\ndata:', data)
     try:
         print_win.delete(1.0, END)
-        print_win.insert(END, "*****************************************\n")
-        print_win.insert(END, "Return code:" + str(return_code) + "\n")
-        print_win.insert(END, "Data:" + str(data) + "\n")
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
     except:
         print_win.delete(1.0, END)
-        print_win.insert(1.0, "Frida start false!\n")
+        print_win.insert(1.0, "\tFrida start false!\n")
 
 def killFrida():
     cmd = "adb shell su -c 'pkill -9 hluda-server'"
@@ -112,58 +131,56 @@ def killFrida():
     # print('return code:', return_code, '\ndata:', data)
     try:
         print_win.delete(1.0, END)
-        print_win.insert(END, "*****************************************\n")
-        print_win.insert(END, "Return code:" + str(return_code) + "\n")
-        print_win.insert(END, "Data:" + str(data) + "\n")
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
     except:
         print_win.delete(1.0, END)
-        print_win.insert(1.0, "Frida kill false!\n")
+        print_win.insert(1.0, "\tFrida kill false!\n")
 
 def startGadget():
     try:
+        packageName = getApkInfo()
         cmd = "adb shell su -c \'echo " + packageName + " > /data/local/tmp/app.list\'"
         # print(cmd)
         return_code, data = run(cmd)
         cmd_fordward = "adb forward tcp:27042 tcp:26000"
         return_code, data = run(cmd_fordward)
         # print('return code:', return_code, '\ndata:', data)
-        print_win.delete(1.0, END)
-        print_win.insert(END, "*****************************************\n")
-        print_win.insert(END, "Return code:" + str(return_code) + "\n")
-        print_win.insert(END, "Data:" + str(data) + "\n")
+        # print_win.delete(1.0, END)
+        print_win.insert(END, "\n\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\tData:" + str(data) + "\n")
     except:
         getApkInfo()
-        print_win.insert(END, "Frida gadget start false!\n")
-        print_win.insert(END, "Plase click again!\n")
+        print_win.insert(END, "\tFrida gadget start false!\n")
 
 def androidDos():
     try:
-        print_win.delete(1.0, END)
-        getApkInfo()
-        print_win.insert(END, "\n*****************************************\n")
+        packageName = getApkInfo()
+        # print_win.delete(1.0, END)
+        print_win.insert(END, "\n\t*****************************************\n")
         initEpList(packageName)
-
         dos_activitys = activitysDosTest(packageName)
-        print_win.insert(END, "DOS Activity:\n")
+        print_win.insert(END, "\tDOS Activity:\n")
         for dos_activity in dos_activitys:
-            print_win.insert(END, str(dos_activity) + '\n')
+            print_win.insert(END, '\t' + str(dos_activity) + '\n')
         print_win.insert(END, '\n')
 
         dos_services = servicesDosTest(packageName)
-        print_win.insert(END, "DOS Service:\n")
+        print_win.insert(END, "\tDOS Service:\n")
         for dos_service in dos_services:
-            print_win.insert(END, str(dos_service) + '\n')
+            print_win.insert(END, '\t' + str(dos_service) + '\n')
         print_win.insert(END, '\n')
 
         dos_receivers = receiversDosTest(packageName)
-        print_win.insert(END, "DOS Receiver:\n")
+        print_win.insert(END, "\tDOS Receiver:\n")
         for dos_receiver in dos_receivers:
-            print_win.insert(END, str(dos_receiver) + '\n')
-        print_win.insert(END, '\n')
+            print_win.insert(END, '\t' + str(dos_receiver) + '\n')
+        print_win.insert(END, "\n\t*****************************************\n")
     except Exception as e:
         print(e)
-        print_win.insert(END, "run android dos false!\n")
-        print_win.insert(END, "Plase click again!\n")
+        print_win.insert(END, "\trun android dos false!\n")
 
 def my_message_handler(message, payload):
     print(message)
