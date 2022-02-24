@@ -70,10 +70,10 @@ def getApkInfo():
         apkSha1 = m.hexdigest()
         print_win.delete(1.0, END)
         print_win.insert(END, "\t*****************************************\n")
-        print_win.insert(END, "\t应用名:" + appName + "\n")
-        print_win.insert(END, "\t包名:" + packageName + "\n")
-        print_win.insert(END, "\t入口:" + apk.get_main_activity() + "\n")
-        print_win.insert(END, "\t版本:" + androidVersionName + "\n")
+        print_win.insert(END, "\t应用名:" + str(appName) + "\n")
+        print_win.insert(END, "\t包名:" + str(packageName) + "\n")
+        print_win.insert(END, "\t入口:" + str(apk.get_main_activity()) + "\n")
+        print_win.insert(END, "\t版本:" + str(androidVersionName) + "\n")
         print_win.insert(END, "\t开启调试:" + str(debuggable) + "\n")
         print_win.insert(END, "\t允许备份:" + str(allowBackup) + "\n")
         print_win.insert(END, "\t文件大小:" + str(os.path.getsize(apk.get_filename())) + "\n")
@@ -85,7 +85,8 @@ def getApkInfo():
         print_win.insert(END, "\tApk文件MD5:" + apkMd5 + "\n")
         print_win.insert(END, "\tApk文件SHA1:" + apkSha1 + "\n")
         print_win.insert(END, "\t*****************************************\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tGet apk info false!\n")
     return packageName
