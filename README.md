@@ -2,6 +2,7 @@
 
 1. 获取应用基本信息
 2. 应用重签名
+3. 通过 adb 设置代理
 3. frida push
 4. 启动/关闭 frida
 5. 开启 gadget
