@@ -7,6 +7,7 @@
 4. 启动/关闭 frida
 5. 开启 gadget
 6. 自动 DOS 攻击
+7. IPA info
 
 ## TODO
 

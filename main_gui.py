@@ -1,13 +1,12 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Jussi
 
-import hashlib
-import os
 import threading
 from tkinter import *
 import windnd
 from androguard.core.bytecodes.apk import APK
 from android_dos import *
+from ipainfo import *
 from run_shell import *
 from config import *
 
@@ -15,7 +14,8 @@ def getApkPath(files):
     try:
         apk_path_Text.delete(1.0, END)
         apk_path_Text.insert(1.0, files[-1].decode("gbk"))
-    except:
+    except Exception as e:
+        print(e)
         apk_path_Text.delete(1.0, END)
         apk_path_Text.insert(1.0, "\tGet apk path false!\n")
 
@@ -40,7 +40,8 @@ def signApk():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tApk sign false!")
 
@@ -48,6 +49,9 @@ def signApk():
 
 def getApkInfo():
     packageName = ""
+    debuggable = False
+    allowBackup = True
+
     apk_path = apk_path_Text.get(1.0, END).strip().replace("\n", "")
     try:
         apk = APK(apk_path)
@@ -107,7 +111,8 @@ def setProxy():
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
         getProxy()
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tSet porxy false!\n")
 
@@ -121,7 +126,8 @@ def clearProxy():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tClose porxy false!\n")
 
@@ -135,7 +141,8 @@ def getProxy():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tget porxy false!\n")
 
@@ -159,7 +166,8 @@ def pushFrida():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tFrida chmod false!\n")
 
@@ -174,7 +182,8 @@ def startFrida():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         print_win.delete(1.0, END)
         print_win.insert(1.0, "\tFrida start false!\n")
 
@@ -208,7 +217,8 @@ def startGadget():
         print_win.insert(END, "\n\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
-    except:
+    except Exception as e:
+        print(e)
         getApkInfo()
         print_win.insert(END, "\tFrida gadget start false!\n")
 
@@ -243,6 +253,32 @@ def androidDos():
 
 
 
+def get_ipa_info():
+    ipa_path = apk_path_Text.get(1.0, END).strip().replace("\n", "")
+    if ipa_path[-4:] == ".ipa":
+        plist_root = analyze_ipa_with_biplist(ipa_path)
+        fsize = get_file_size(ipa_path)
+        try:
+            print_win.delete(1.0, END)
+            print_win.insert(END, "\t*****************************************\n")
+            print_win.insert(END, "\t文件名:" + plist_root['CFBundleDisplayName'] + "\n")
+            print_win.insert(END, "\t进程名:" + plist_root['CFBundleName'] + "\n")
+            print_win.insert(END, "\t包名:" + plist_root['CFBundleIdentifier'] + "\n")
+            print_win.insert(END, "\t版本号:" + plist_root['CFBundleShortVersionString'] + "\n")
+            print_win.insert(END, "\t文件大小:" + str(fsize) + "\n")
+            print_win.insert(END, "\tMD5:" + CalcMD5(ipa_path) + "\n")
+            print_win.insert(END, "\tSHA1:" + CalcSha1(ipa_path) + "\n")
+        except Exception as e:
+            print(e)
+            print_win.delete(1.0, END)
+            print_win.insert(1.0, "\tGet ipa info false!\n")
+    else:
+        print_win.delete(1.0, END)
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tThe file suffix is not ipa !\n")
+
+
+
 def my_message_handler(message, payload):
     print(message)
     print(payload)
@@ -267,7 +303,7 @@ def gui_start():
 
     global root, apk_path_Text, print_win
     root = Tk()              #实例化出一个父窗口
-    root.title("Android Anti Test @Jussi (严禁用于非授权的测试及非法用途)")
+    root.title("APP Anti Test @Jussi (严禁用于非授权的测试及非法用途)")
     root.geometry('1000x800+10+10')
 
     # apk path
@@ -318,6 +354,10 @@ def gui_start():
     # android DOS
     android_DOS = Button(root, text="android-Dos", bg="lightblue", width=10, command=lambda:thread_it(androidDos))
     android_DOS.grid(row=25, column=5, sticky=W)
+
+    # get ipa info
+    ipa_info = Button(root, text="ipaInfo", bg="lightblue", width=10, command=lambda:thread_it(get_ipa_info))
+    ipa_info.grid(row=35, column=1, sticky=W)
 
     # print windows
     apk_name_label = Label(root, text="Print Windows:")
