@@ -126,6 +126,7 @@ def clearProxy():
         print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
+        getProxy()
     except Exception as e:
         print(e)
         print_win.delete(1.0, END)
@@ -137,8 +138,6 @@ def getProxy():
     cmd = "adb shell settings get global http_proxy"
     return_code, data = run(cmd)
     try:
-        print_win.delete(1.0, END)
-        print_win.insert(END, "\t*****************************************\n")
         print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
         print_win.insert(END, "\tData:" + str(data) + "\n")
     except Exception as e:
@@ -147,6 +146,23 @@ def getProxy():
         print_win.insert(1.0, "\tget porxy false!\n")
 
 
+def getCurrentActivity():
+
+    # android < 8.1
+    # cmd = "adb shell dumpsys activity | grep \"mFocusedActivity\""
+
+    # android >= 8.1
+    cmd = "adb shell dumpsys activity | grep \"mResume\""
+    return_code, data = run(cmd)
+    try:
+        print_win.delete(1.0, END)
+        print_win.insert(END, "\t*****************************************\n")
+        print_win.insert(END, "\tReturn code:" + str(return_code) + "\n")
+        print_win.insert(END, "\t" + str(data) + "\n")
+    except Exception as e:
+        print(e)
+        print_win.delete(1.0, END)
+        print_win.insert(1.0, "\tGet current activity false!\n")
 
 def pushFrida():
     cmd = "adb push " + frida_server + " /data/local/tmp"
@@ -331,9 +347,9 @@ def gui_start():
     clear_proxy_button = Button(root, text="ClearProxy", bg="lightblue", width=10, command=lambda: thread_it(clearProxy))
     clear_proxy_button.grid(row=15, column=4, sticky=W)
 
-    # get proxy
-    get_proxy_button = Button(root, text="GetProxy", bg="lightblue", width=10, command=lambda: thread_it(getProxy))
-    get_proxy_button.grid(row=15, column=5, sticky=W)
+    # get current Activity
+    get_Activity_button = Button(root, text="CurActivity", bg="lightblue", width=10, command=lambda: thread_it(getCurrentActivity))
+    get_Activity_button.grid(row=15, column=5, sticky=W)
 
     # frida push
     frida_push_button = Button(root, text="frida-push", bg="lightblue", width=10, command=lambda: thread_it(pushFrida))
